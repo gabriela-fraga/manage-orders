@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { OrdersService } from './orders.service';
 
 @Component({
   selector: 'app-root',
@@ -13,16 +14,16 @@ export class AppComponent {
   title = 'manage-orders';
   orders: Order[] = [];
 
-  constructor() {
-    this.orders.push(new Order(1))
-    this.orders.push(new Order(2))
-    this.orders.push(new Order(3))
-    console.log(this.orders)
+  constructor(private ordersService: OrdersService) {}
+  
+  ngOnInit() {
+    this.ordersService.getOrders().subscribe(orders => {
+      this.orders = orders;
+    })
   }
-
 }
 
-class Order {
+export class Order {
   id: number;
   products: Product[] = [];
 

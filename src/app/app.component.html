@@ -6,10 +6,18 @@
 </div>
 
 <ul>
-  <li *ngFor="let order of orders">
-    Order {{ order.id }}: 
-    <span *ngFor="let product of order.products; let i = index; let last = last">
-      {{product.name}}<span *ngIf="!last">,</span> 
-    </span>
+  <li *ngFor="let order of orders" class="margin-t-sm">
+    <div class="flex-row align-center">
+      Order {{ order.id }}:&nbsp;
+      <span *ngFor="let product of order.products; let i = index; let last = last">
+        {{product}}<span *ngIf="!last">,&nbsp;</span> 
+      </span>
+      <button (click)="addProduct(order.id)">Add Product</button>
+      <div class="flex-row" *ngIf="order.id == addToOrder">
+        <input maxlength="50" [(ngModel)]="newProduct"/>
+        <button (click)="saveProduct(order.id)">Add</button>
+        <button (click)="addToOrder = -1">Close</button>
+      </div>
+    </div>
   </li>
 </ul>

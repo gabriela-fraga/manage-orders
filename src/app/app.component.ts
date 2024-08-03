@@ -21,6 +21,12 @@ export class AppComponent {
       this.orders = orders;
     })
   }
+
+  addOrder() {
+    this.ordersService.addOrder().subscribe(orders => {
+      this.orders = orders;
+    })
+  }
 }
 
 export class Order {

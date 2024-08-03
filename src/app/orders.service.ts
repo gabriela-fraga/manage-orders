@@ -9,14 +9,18 @@ export class OrdersService {
 
   orders: Order[] = [];
 
-  constructor() {
-    this.orders.push(new Order(1));
-    this.orders.push(new Order(2));
-    this.orders.push(new Order(3));
-  }
+  constructor() {}
 
   getOrders() {
     return new Observable<Order[]>(observer => {
+      observer.next(this.orders);
+      observer.complete();
+    })
+  }
+
+  addOrder() {
+    return new Observable<Order[]>(observer => { 
+      this.orders.push(new Order(this.orders.length >= 1 ? this.orders.length + 1 : 1))
       observer.next(this.orders);
       observer.complete();
     })

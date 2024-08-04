@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Order } from './app.component'
-import { Observable } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -12,56 +12,54 @@ export class OrdersService {
   constructor() {}
 
   getOrders() {
-    return new Observable<Order[]>(observer => {
-      observer.next(this.orders);
-      observer.complete();
-    })
+    return of(this.orders)
   }
 
   addOrder() {
-    return new Observable<Order[]>(observer => { 
-      this.orders.push(new Order(this.orders.length >= 1 ? this.orders.length + 1 : 1))
-      observer.next(this.orders);
-      observer.complete();
-    })
+    this.orders.push(new Order(this.orders.length >= 1 ? this.orders.length + 1 : 1))
+    return of(this.orders)
   }
 
   addProduct(orderId: number, product: string) {
-    return new Observable<Order>(observer => {
-      const orderIndex = this.orders.findIndex(order => order.id === orderId);
-      if (orderIndex !== -1) {
-        this.orders[orderIndex].addProduct(product);
-      } else {
-        console.log('ERROR: Id not found');
+    const order = this.orders.find(order => order.id === orderId);
+      if (order) {
+        order.addProduct(product);
       }
-      observer.next(this.orders.at(orderIndex));
-      observer.complete();
-    })
+      return of(order).pipe(map(order => {
+        if (order) {
+          return order;
+        } else {
+          throw new Error('ERROR: Order not found');
+        }
+    }))
   }
 
   removeProduct(orderId: number, product: string) {
-    return new Observable<Order>(observer => {
-      const orderIndex = this.orders.findIndex(order => order.id === orderId);
-      if (orderIndex !== -1) {
-        this.orders[orderIndex].removeProduct(product);
-      } else {
-        console.log('ERROR: Id not found');
+    const order = this.orders.find(order => order.id === orderId);
+      if (order) {
+        order.removeProduct(product);
       }
-    });
+      return of(order).pipe(map(order => {
+        if (order) {
+          return order;
+        } else {
+          throw new Error('ERROR: Order not found');
+        }
+    }))
   }
 
   closeOrder(orderId: number) {
-    return new Observable<Order>(observer => {
-      const orderIndex = this.orders.findIndex(order => order.id === orderId);
-      if (orderIndex !== -1) {
-        if(this.orders[orderIndex].products.length <= 0) {
-          console.log('ERROR: Can\'t close order without a product');
-        } else {
-          this.orders[orderIndex].closeOrder();
-        }
+    const order = this.orders.find(order => order.id === orderId);
+    if(order && order.products?.length > 0) {
+      order.closeOrder();
+    }return of(order).pipe(map(order => {
+      if (order && order.products?.length > 0) {
+        return order;
+      } else if (order && order.products?.length <= 0){
+        throw new Error('ERROR: Can\'t close order without a product');
       } else {
-        console.log('ERROR: Id not found');
+        throw new Error('ERROR: Order not found');
       }
-    });
+  }));
   }
 }

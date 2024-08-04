@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { OrdersService } from './orders.service';
 import { FormsModule } from '@angular/forms';
+import { catchError, Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -11,11 +12,12 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent {
+export class AppComponent implements OnInit, OnDestroy {
   title = 'manage-orders';
   orders: Order[] = [];
   addToOrder = -1;
   newProduct = '';
+  private destroyer: Subject<any> = new Subject();
 
   constructor(private ordersService: OrdersService) {}
   
@@ -23,6 +25,11 @@ export class AppComponent {
     this.ordersService.getOrders().subscribe(orders => {
       this.orders = orders;
     })
+  }
+
+  ngOnDestroy() {
+    this.destroyer.complete();
+    this.destroyer.unsubscribe();
   }
 
   addOrder() {
@@ -37,7 +44,13 @@ export class AppComponent {
 
   saveProduct(orderId: number) {
     if(this.newProduct) {
-      this.ordersService.addProduct(orderId, this.newProduct).subscribe(order => {
+      this.ordersService.addProduct(orderId, this.newProduct).pipe(
+        takeUntil(this.destroyer),
+        catchError(error => {
+          console.log(error);
+          throw new Error(error);
+      }))
+      .subscribe(order => {
         const orderIndex = this.orders.findIndex(order => order.id === orderId);
         if (orderIndex !== -1) {
           this.newProduct = '';
@@ -52,18 +65,21 @@ export class AppComponent {
   }
 
   removeProduct(orderId: number, product: string) {
-    this.ordersService.removeProduct(orderId, product).subscribe(order => {
-      const orderIndex = this.orders.findIndex(order => order.id === orderId);
-      if (orderIndex == -1) {
-        console.log('ERROR: Order not found');
-      }
-    });
+    this.ordersService.removeProduct(orderId, product).pipe(
+      takeUntil(this.destroyer),
+      catchError(error => {
+        console.log(error);
+        throw new Error(error);
+    })).subscribe()
   }
 
   closeOrder(orderId: number) {
-    this.ordersService.closeOrder(orderId).subscribe(order => {
-      console.log(order)
-    });
+    this.ordersService.closeOrder(orderId).pipe(
+      takeUntil(this.destroyer),
+      catchError(error => {
+        console.log(error);
+        throw new Error(error);
+    })).subscribe();
   }
 }
 

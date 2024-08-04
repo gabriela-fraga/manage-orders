@@ -59,11 +59,18 @@ export class AppComponent {
       }
     });
   }
+
+  closeOrder(orderId: number) {
+    this.ordersService.closeOrder(orderId).subscribe(order => {
+      console.log(order)
+    });
+  }
 }
 
 export class Order {
   id: number;
   products: string[] = [];
+  status: string = 'OPEN';
 
   constructor(id: number) {
       this.id = id;
@@ -78,6 +85,10 @@ export class Order {
     if (productIdx > -1) {
       this.products.splice(productIdx, 1);
     }
+  }
+
+  closeOrder() {
+    this.status = 'CLOSED';
   }
 
 }

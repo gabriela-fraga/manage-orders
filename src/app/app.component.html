@@ -10,14 +10,16 @@
     <div class="flex-row align-center">
       Order {{ order.id }}:&nbsp;
       <span *ngFor="let product of order.products; let i = index; let last = last">
-        {{product}}<button (click)="removeProduct(order.id, product)">X</button><span *ngIf="!last">,&nbsp;</span> 
+        {{product}}<button *ngIf="order.status === 'OPEN'" (click)="removeProduct(order.id, product)">X</button><span *ngIf="!last">,&nbsp;</span> 
       </span>
-      <button (click)="addProduct(order.id)">Add Product</button>
-      <div class="flex-row" *ngIf="order.id == addToOrder">
+      &nbsp;{{order.status}}
+      <button *ngIf="order.status === 'OPEN'" (click)="addProduct(order.id)">Add Product</button>
+      <div class="flex-row" *ngIf="order.id == addToOrder && order.status === 'OPEN'">
         <input maxlength="50" [(ngModel)]="newProduct"/>
         <button (click)="saveProduct(order.id)">Add</button>
         <button (click)="addToOrder = -1">Close</button>
       </div>
+      <button *ngIf="order.id != addToOrder && order.status === 'OPEN' && order.products.length > 0" (click)="closeOrder(order.id)">Close Order</button>
     </div>
   </li>
 </ul>

@@ -49,4 +49,19 @@ export class OrdersService {
       }
     });
   }
+
+  closeOrder(orderId: number) {
+    return new Observable<Order>(observer => {
+      const orderIndex = this.orders.findIndex(order => order.id === orderId);
+      if (orderIndex !== -1) {
+        if(this.orders[orderIndex].products.length <= 0) {
+          console.log('ERROR: Can\'t close order without a product');
+        } else {
+          this.orders[orderIndex].closeOrder();
+        }
+      } else {
+        console.log('ERROR: Id not found');
+      }
+    });
+  }
 }

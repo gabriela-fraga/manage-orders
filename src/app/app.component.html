@@ -10,7 +10,7 @@
     <div class="flex-row align-center">
       Order {{ order.id }}:&nbsp;
       <span *ngFor="let product of order.products; let i = index; let last = last">
-        {{product}}<span *ngIf="!last">,&nbsp;</span> 
+        {{product}}<button (click)="removeProduct(order.id, product)">X</button><span *ngIf="!last">,&nbsp;</span> 
       </span>
       <button (click)="addProduct(order.id)">Add Product</button>
       <div class="flex-row" *ngIf="order.id == addToOrder">

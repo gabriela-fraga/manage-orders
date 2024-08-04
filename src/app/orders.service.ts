@@ -32,10 +32,21 @@ export class OrdersService {
       if (orderIndex !== -1) {
         this.orders[orderIndex].addProduct(product);
       } else {
-        console.log('EERO: Id not found');
+        console.log('ERROR: Id not found');
       }
       observer.next(this.orders.at(orderIndex));
       observer.complete();
     })
+  }
+
+  removeProduct(orderId: number, product: string) {
+    return new Observable<Order>(observer => {
+      const orderIndex = this.orders.findIndex(order => order.id === orderId);
+      if (orderIndex !== -1) {
+        this.orders[orderIndex].removeProduct(product);
+      } else {
+        console.log('ERROR: Id not found');
+      }
+    });
   }
 }

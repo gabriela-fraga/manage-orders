@@ -43,12 +43,21 @@ export class AppComponent {
           this.newProduct = '';
           this.orders[orderIndex] = order;
         } else {
-          console.log('ERRO: Order not found');
+          console.log('ERROR: Order not found');
         }
       })
     } else {
-      console.log('ERRO: Need to inform a product');
+      console.log('ERROR: Need to inform a product');
     }
+  }
+
+  removeProduct(orderId: number, product: string) {
+    this.ordersService.removeProduct(orderId, product).subscribe(order => {
+      const orderIndex = this.orders.findIndex(order => order.id === orderId);
+      if (orderIndex == -1) {
+        console.log('ERROR: Order not found');
+      }
+    });
   }
 }
 
@@ -63,4 +72,12 @@ export class Order {
   addProduct(product: string) {
     this.products.push(product)
   }
+
+  removeProduct(product: string) {
+    const productIdx = this.products.indexOf(product);
+    if (productIdx > -1) {
+      this.products.splice(productIdx, 1);
+    }
+  }
+
 }

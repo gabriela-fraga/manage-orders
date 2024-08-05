@@ -60,6 +60,11 @@ export class OrdersService {
       } else {
         throw new Error('ERROR: Order not found');
       }
-  }));
+    }));
+  }
+
+  filterOrders(filters: boolean[]) {
+    const filteredOrders = this.orders.filter(order => (order.status === 'OPEN' && filters[0]) || (order.status === 'CLOSED' && filters[1]));
+    return of(filteredOrders);
   }
 }

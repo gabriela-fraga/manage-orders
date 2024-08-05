@@ -3,10 +3,16 @@
 <div class="flex-row align-center">
   <h2>Orders</h2>
   <button (click)="addOrder()">New Order</button>
+  <span class="margin-l-sm">Filter:</span>
+  <input type="checkbox" [(ngModel)]="filters[0]"> Open
+  <input type="checkbox" [(ngModel)]="filters[1]"> Closed
+  <button (click)="applyFilters()">Apply Filters</button>
 </div>
 
-<ul>
+<ul *ngIf="orders.length > 0">
   <li *ngFor="let order of orders" class="margin-t-sm">
     <order [order]="order"></order>
   </li>
 </ul>
+
+<span *ngIf="orders.length <= 0">There are no orders to display with this filter configuration.</span>
